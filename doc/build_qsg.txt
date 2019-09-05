@@ -2,14 +2,14 @@
 See first of all RZ-N1D-System-Setup-Tutorial.pdf.
 ****************************************
 SHORT GUIDE ==========================================
-Pull anytime to get the latest updates
-$ git clone -b rzn1-stable https://github.com/renesas-rz/rzn1_linux.git
-
+------------------------------------------------------
+If not using build.sh; you just want the kernel source
+------------------------------------------------------
+$ git clone -b rzn1-stable-v4.19 https://github.com/renesas-rz/rzn1_linux.git
 $ cd rzn1_linux/
 
 You should see the 'rzn1-stable' branch.
 $ git branch -a
-
 * rzn1-stable
   remotes/origin/HEAD -> origin/master
   remotes/origin/master
@@ -18,6 +18,12 @@ $ git branch -a
 This branch includes the GOAL Core-to-Core (C2C) driver from port GmbH. 
 OBSERVE: The C2C driver version must match the GOAL Cortex M3 code version
 
+
+---------------------------------------------------------
+If using BUILD.SH (Should make life ALOT easier for you..)
+---------------------------------------------------------
+Download 
+https://github.com/renesas-rz/rzn1_linux-4.19_bsp
 Unzip rzn1_linux-4.9_bsp
 $cd ~/rzn1_linux-4.9_bsp
 The first time you build in a directory you must do
@@ -30,10 +36,10 @@ $./build.sh buildroot rzn1_defconfig
 To add something you want to root file system (RFS)
 $./build.sh buildroot menuconfig
 
-Add other of your own files under here
+Add your own files to the linux root file system here
 $mkdir output/buildroot-2017.02/output/rootfs_overlay
 
-Build RFS
+Build root file system 
 $./build.sh buildroot
 
 $./build.sh kernel rzn1_defconfig
@@ -45,7 +51,7 @@ Change your kernel the way you want it.
 $./build.sh kernel uImage
 
 -------
-To update kernel (should not have to be done often)
+To update kernel (no need to do often)
 $./build.sh update k
 
 (Or run 
