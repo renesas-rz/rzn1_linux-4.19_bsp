@@ -1,0 +1,26 @@
+From ff8fbd4f23dd8f14b61c7574359b6fc1c13608a7 Mon Sep 17 00:00:00 2001
+From: Phil Edworthy <phil.edworthy@renesas.com>
+Date: Mon, 22 Feb 2016 14:52:36 +0000
+Subject: [PATCH] Increase timeout from 5s to 10s
+
+Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+---
+ src/dfu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/dfu.c b/src/dfu.c
+index 14d7673..0409c01 100644
+--- a/src/dfu.c
++++ b/src/dfu.c
+@@ -30,7 +30,7 @@
+ #include "dfu.h"
+ #include "quirks.h"
+ 
+-static int dfu_timeout = 5000;  /* 5 seconds - default */
++static int dfu_timeout = 10000;  /* 10 seconds - default */
+ 
+ /*
+  *  DFU_DETACH Request (DFU Spec 1.0, Section 5.1)
+-- 
+2.5.0
+

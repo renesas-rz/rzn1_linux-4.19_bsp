@@ -1,0 +1,26 @@
+From 6365b8ea4aa2a30a1fe89e4fd51d8e7c5d9574b1 Mon Sep 17 00:00:00 2001
+From: Phil Edworthy <phil.edworthy@renesas.com>
+Date: Tue, 23 Feb 2016 18:44:21 +0000
+Subject: [PATCH] Add something to the version info to show its changed
+
+Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+---
+ src/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.c b/src/main.c
+index acaed2f..f1c462d 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -202,7 +202,7 @@ static void help(void)
+ 
+ static void print_version(void)
+ {
+-	printf(PACKAGE_STRING "\n\n");
++	printf(PACKAGE_STRING " (Renesas RZ/N1 version)\n\n");
+ 	printf("Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.\n"
+ 	       "Copyright 2010-2014 Tormod Volden and Stefan Schmidt\n"
+ 	       "This program is Free Software and has ABSOLUTELY NO WARRANTY\n"
+-- 
+2.5.0
+

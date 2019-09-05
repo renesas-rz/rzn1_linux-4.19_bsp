@@ -1,0 +1,42 @@
+From f2349fd8141969f94dacedeef9eaa50eb295260b Mon Sep 17 00:00:00 2001
+From: Phil Edworthy <phil.edworthy@renesas.com>
+Date: Mon, 30 Mar 2015 12:19:02 +0100
+Subject: [PATCH] upload: only read the number of bytes we ask for
+
+Without this, dfu-util will read until the device has sent all
+data. That could be a very, very long time and for what? By stopping
+when we have all the data we asked for, it's much easier to check
+that the file written and data read back are the same.
+
+Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+---
+ src/dfu_load.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/dfu_load.c b/src/dfu_load.c
+index 64f7009..92b463d 100644
+--- a/src/dfu_load.c
++++ b/src/dfu_load.c
+@@ -63,13 +63,18 @@ int dfuload_do_upload(struct dfu_if *dif, int xfer_size,
+ 			goto out_free;
+ 		}
+ 
++		if (expected_size && (total_bytes + rc > expected_size)) {
++			rc = expected_size - total_bytes;
++			printf("Received more bytes, only using first %d bytes", rc);
++		}
++
+ 		dfu_file_write_crc(fd, 0, buf, rc);
+ 		total_bytes += rc;
+ 
+ 		if (total_bytes < 0)
+ 			errx(EX_SOFTWARE, "Received too many bytes (wraparound)");
+ 
+-		if (rc < xfer_size) {
++		if (rc < xfer_size || total_bytes == expected_size) {
+ 			/* last block, return */
+ 			ret = total_bytes;
+ 			break;
+-- 
+2.5.0
+
