@@ -1,0 +1,102 @@
+************************************************
+ Renesas Technology America, Inc.
+ Board prep QUICK SYNTAX GUIDE
+ 
+ FOR A NEW BOARD YOU MUST FOLLOW ORDER BELOW!
+************************************************
+
+===================================
+Download U-Boot
+===================================
+To use the latest binary from Renesas, e.g. ../YCONNECT-IT-RZN/Software/U-Boot-and-Linux/u-boot/binaries/u-boot-rzn1d400-db.bin.spkg
+(Hold SW5, press SW3.) At the RZ/N board's terminal you should see 
+    ** BOOTLOADER STAGE0 for RZN1 **
+    Boot source: USB
+
+- - -Linux - - -
+Use dfu-util to download u-boot to RAM:
+1) If first time (BOOT WITH SWITCHES):
+Capture Devices=>USB=>RZ/N DFU  from the Linux VBox
+>sudo dfu-util -D /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/u-boot/binaries/u-boot-rzn1d400-db.bin.spkg
+Board should boot to U-Boot.
+2) If download U-Boot to flash only (already running U-Boot, but need new version.)
+=> env default -f dfu_ext_info
+=> saveenv
+=> sf probe
+=> sf erase 0 10000
+=> dfu
+Capture Devices=>USB=>Renesas USB download gadget
+>sudo dfu-util -a 'sf_uboot' -D /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/u-boot/binaries/u-boot-rzn1d400-db.bin.spkg
+=> \x03  (Ctrl+C)
+
+- - -Windows- - - USE POWERSHELL
+1) If first time (BOOT WITH SWITCHES):
+Use dfu-util to download u-boot to RAM:
+>cd C:\Workspace\RZN\YCONNECT-IT-RZN\Tools\dfu-util
+>dfu-util[-static] -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1d400-db.bin.spkg'
+- WITH OR WITHOUT APOSTROPHES, depends on terminal.
+Board should boot to U-Boot.
+2) If download U-Boot to flash only (already running U-Boot, but need new version.)
+At U-boot  serial terminal:
+=> env default -f dfu_ext_info
+=> saveenv
+=> sf probe
+=> sf erase 0 10000
+=> dfu
+>dfu-util[-static] -a 'sf_uboot' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1d400-db.bin.spkg'
+=>\x03  (Ctrl+C)
+
+Observe 'sf_spl' is the first region of QSPI, and sf_uboot is the second. Try 'sf_spl' if your u-boot does not run.
+Press SW3 to reboot. You should see the date of u-boot changed.
+
+
+LAB to boot DB board; add
+setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 rootwait init=/init clk_ignore_unused"
+Or if ethernet connected:
+setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 init=/init rootwait ip=192.168.1.50:::::eth0 clk_ignore_unused"
+setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 4 && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 f00000 && bootm 0x80008000 - 0x8ffe0000"
+
+
+===================================
+Download DTB (Device Tree) to QSPI
+===================================
+[From U-Boot terminal] => dfu
+[From PC] 
+- - -Linux - - -
+>sudo dfu-util -a 'sf_dtb' -D ./output/rzn1_linux/arch/arm/boot/dts/rzn1d400-db.dtb
+Provided binary from CD:
+>sudo dfu-util -a 'sf_dtb' -D /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/uImage-rzn1d400-db.dtb 
+- - -Windows - - -
+>cd C:\Workspace\RZN\YCONNECT-IT-RZN\Tools\dfu-util
+To use the provided binary from CD:
+>dfu-util[-static] -a 'sf_dtb' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\kernel\binaries\uImage-rzn1d400-db.dtb'
+Your own build DTB, copied after build: In this case built under linux and copied: cp ~/rzn1_linux-4.9_bsp2/output/rzn1_linux/arch/arm/boot/dts/rzn1d400-db-both-gmacs.dtb /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/rzn1d400-db-both-gmacs_rea.dtb
+> dfu-util-static.exe -a 'sf_dtb' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\kernel\binaries\rzn1d400-db-both-gmacs_rea.dtb'
+TSN demo example:
+>dfu-util[-static] -a 'sf_dtb' -D 'C:\Workspace\RZN\TSN\TSN-Demo-2017\SPS_DEMO_2017\images\linux\rzn1d400-db.dtb'
+
+
+===================================
+Download kernel
+===================================
+Download linux kernel to QSPI:
+[From U-Boot terminal] => dfu
+- - -Linux - - -
+>sudo dfu-util -a 'sf_kernel' -D output/rzn1_linux/arch/arm/boot/uImage
+Or, with prebuilt binary
+>sudo dfu-util -a 'sf_kernel' -D /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/uImage
+- - - Windows- - -
+>dfu-util[-static] -a 'sf_kernel' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\kernel\binaries\uImage'
+
+
+===================================
+Download CM3 application
+===================================
+=> dfu
+- - - Windows- - - USE WINDOWS POWERSHELL
+>dfu-util.exe -a "sf_cm3" -D "rzn1d_demo_board.bin" <=Observe *.OUT binary contains debug info.
+For ex. 
+>dfu-util -a "sf_cm3" -D C:\Workspace\RZN\Port-Goal\GOAL_.x.y\Applications\2018001_vx_y_renesas_rzn_rc_source_ci153\projects\00410_goal\tcp_server\iar\renesas\rzn1d_demo_board_eb\Debug-RAM\Exe\rzn1d_demo_board_eb.bin
+- - -Linux - - -
+In Linux:
+sudo dfu-util -a "sf_cm3" -D "rzn1d_demo_board.bin"

@@ -1,0 +1,261 @@
+**********************************************************
+Create Buildroot tree with user content on an MMC (or USB)
+**********************************************************
+
+
+Prepare the media (MMC / usb-stick)
+====================================================
+Format media
+------------
+>sudo gparted
+Create an ext4 partition and label it e.g. rzn1_sd_may2018.
+Unattach and reattach the SD card from the file manager.
+
+Copy the root.fs containing the tree and unzip
+----------------------------------------------
+- To an SD/MMC card.
+>cd /media/usb0/
+Remove old files.
+>sudo rm -fr *
+>sudo cp ~/RZN/rzn1_linux-4.9_bsp/output/buildroot-2017.02/output/images/rootfs.tar ./
+>sudo tar xfv rootfs.tar
+Before removing from PC:
+Flush cache
+>sync
+>cd -
+Remove from PC ==> to RZ/N board.
+OBSERVE: Set bootargs like this to test.
+=>setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 rootwait clk_ignore_unused"
+Tested SD cards: SanDisk 2 GB, GB, 16 GB.
+
+(- To a usb-stick:
+>sudo cp /home/sven/RZ-N/rzn1_linux-4.9_bsp/output/buildroot-2017.02/output/images/rootfs.tar /media/sven/x)
+Tested micro SD cards and Sandisk 16 GB SDHC card.
+
+
+
+Adding MMC to the Device Tree
+====================================================
+Adding MMC experimentally
+-------------------------
+In DTS:
+Change the fdt_chosen structure in 
+file:///home/sven/RZ-N/rzn1_linux-4.9_bsp/output/linux-4.9/arch/arm/boot/dts/rzn1d400-db.dts
+USE/OVERRIDE it by doing this at u-boot prompt:
+=>sf probe
+=>sf read 0x8ffe0000 b0000 20000
+=>fdt addr 0x8ffe0000
+=>fdt list   [To see current fdt chosen bootargs, or just   =>fdt print /chosen  ]
+=>setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 rootwait clk_ignore_unused"
+or
+=>setenv bootargs "console=ttyS,115200 root=/dev/mmcblk0p1 rootwait init=bin/sh"
+=>fdt chosen    [SET bootargs above]
+
+If you get "WARNING: could not set bootargs FDT_ERR_NOSPACE." 
+print
+ you need to edit the DTS file, under chosen, and add spaces to the string, e.g:
+...
+chosen {
+bootargs = "console=ttyS0,115200                                                                                                                                                                " <====
+...
+Now build as explained in "Build device tree" in rzn-rea-ubs-build-guide.txt, then download it.
+
+
+
+Testing SD/MMC
+------------------
+Display MMC info:
+=>mmcinfo
+List files on SD:
+=>ext4ls mmc 0:1
+Boot Linux from the SD instead of from flash (QSPI). 
+Load the DTB from an SD card, located in the /boot folder. 
+=>ext4load mmc 0:1 0x8ffe0000 /boot/uImage_goalctc_1.3.dtb
+Load kernel:
+=>ext4load mmc 0:1 0x80008000 /boot/uImage_goalctc_1.3.bin
+
+
+Load and run CM3 executable, e.g. GOAL 
+====================================================
+To build code see rzn-univ-build-guide.txt.
+Download to QSPI the CM3 image.
+in U-Boot:
+=> dfu 
+PC
+- - - Linux - - -
+>sudo dfu-util -a 'sf_cm3' -D ./executable_filename
+You may need to do 
+>chown username ./executable_file
+or/and
+chmod +x ./executable_file
+If dfu-util fails on host:
+- Are you sudo?
+- Using Virtual Linux? You must attach the enumerated Renesas USB download driver to the virtual linux instead of Windows.
+
+- - - Windows - - -
+>dfu-util-static -a 'sf_cm3' -D './executable_file'
+
+U-Boot:
+Add <&& rzn1_start_cm3> to u-boot’s bootcmd, right after command to read the cm3 image to RAM, e.g:
+=>setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 8 && sf read 0x8ffe0000 b0000 20000 && fdt addr 0x8ffe0000 && fdt chosen && sf read 0x80008000 1d0000 f00000 && bootm 0x80008000 - 0x8ffe0000"
+or without fdt chosen
+=>setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 8 && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 f00000 && bootm 0x80008000 - 0x8ffe0000"
+The CM3 binary should now execute right after <boot> is issued from U-boot. And you should see CC_xxx traces from the CM3 output.
+
+
+COMMENTS on bootcmd
+---------------------------------
+sf read 0x4000000 d0000 80000 && rzn1_start_cm3 ==> Read CM3 Image from QSPI and load in SRAM and run CM3 from reset.
+sleep 4			       		        ==> Wait for 4 seconds
+sf read 0x8ffe0000 b0000 20000		==> Read 0x20000 (all 128 k) bytes of DTB area from QSPI @ b0000 and load to SRAM at 0x8ffe0000.
+sf read 0x80008000 1d0000 f00000	==> Read Kernel @ 1d0000 and load in DDR.
+bootm 0x80008000 - 0x8ffe0000		==> Boot kernel now at 80008000.    ]
+
+
+Using the IAR I-Jet to debug a CM3 project from Windows
+====================================================
+Debug CM3 core, without anything running on A7.
+ ------------------------------------------------------
+Switch W1 set to OFF.
+Release CM3 from reset by issuing from U-Boot console:
+=>rzn1_start_cm3
+Download and Debug [Ctrl+D].
+
+Debug CM3 while Linux is running on CA7.
+------------------------------------------------------
+- Switch W1 set to OFF.
+- To prevent the debug image to not be overwritten by the CM3 app stored on the board (right after the pause in bootcmd), we remove "sf read 0x4000000 d0000 80000".
+- To setup/enable the CM3 core for the debugger, and run the CM3 core, and add a sleep period during which we can load and start the CM3 binary via the IAR debugger.
+we must add 
+"mw 0x04000004 1 && rzn1_start_cm3 && sleep X":
+=> setenv bootcmd "mw 0x04000004 1 && rzn1_start_cm3 && sleep 8 && sf probe && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 600000 && bootm 0x80008000 - 0x8ffe0000"
+=> boot
+In IAR-EW; Download and Debug [Ctrl+D] before the sleep expires)
+
+
+
+Transfer new files to target file system from host
+====================================================
+host: 
+>./build.sh buildroot menuconfig
+		Target packages  --->
+			Networking applications  --->
+				[*] lrzsz
+		Then rebuild your rootfs (./build.sh buildroot) and download this new filesystem to board.
+target:
+$ rz
+(or $ rz -Zy)
+<Will lock-up and wait for host.>
+host:
+install lrzsz
+cd hello_world
+>sz -b hello > /dev/ttyUSB2 < /dev/ttyUSB2
+---
+Or from make directory:
+(>mv build/rzn_a7_demo_board/goal_rzn_a7_demo_board.bin build/rzn_a7_demo_board/goal_tcp_srvr_ctc_demo.bin)
+>sz -b build/rzn_a7_demo_board/goal_tcp_srvr_ctc_demo.bin > /dev/ttyUSB2 < /dev/ttyUSB2
+If th host says "sz: skipped: <filename>" then the problem is either
+- You need be sudo
+- File already exists at target
+- File system (SD) is write protected or broken
+
+
+ThreadX
+=====
+N1D: ThreadX is alternative to Linux on the A7 side.
+xxx_smp projects are for the N1D
+N1S: ThreadX is the only RTOS on the A7 side.
+
+Goal TCP server testing
+==============
+Turn OFF Windows Firewall.
+Linux & Windows connected to CN4 & CN1 respectively.
+Set PC's Linux IP-address as static (non-DHCP). Observe; must be done each time you disconnect/reconnect cable.
+$>sudo ifconfig enp0s25 192.168.1.88
+Ping the RZ/N1.
+$>ping 192.168.1.70
+RZ/N1D will act as switch, so you can also ping Windows PC from Linux PC, and vice versa.
+$>ping 192.168.1.30
+C:/Users/cstenqui01>ping 192.168.1.88
+See the Skkynet app run from A7 side:
+$>python3 ~/Dropbox/PC-Linux/Python/LiClipse/tcp-udp/PyMOTW/UDP_TCP/tcp_udp_echo_client_renesas_goal_7002.py
+
+
+==========================
+RZ/N1S
+==========================
+ThreadX ONLY on A7 side.
+Connect PC host serial terminal to board - corner micro USB.
+If no -EB board, short jumper CN14 to power via USB (by white sticker).
+Download U-Boot to RAM:
+Hold SW2 + press SW9.
+- - - Linux- - - 
+>sudo dfu-util -D /home/sven/RZ-N/YCONNECT-IT-RZN/Software/U-Boot-and-Linux/u-boot/binaries/u-boot-rzn1s324-db.bin.spkg
+- - - Windows - - -
+>dfu-util-static.exe -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\u-boot\binaries\"C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1s324-db.bin.spkg'
+Write U-Boot to QSPI:
+=> env default -f dfu_ext_info
+=> saveenv
+=> sf probe
+=> sf erase 0 10000
+=> dfu
+- - - Linux- - - 
+>sudo dfu-util -a "sf_uboot" -D /home/sven/RZ-N/YCONNECT-IT-RZN/Software/U-Boot-and-Linux/u-boot/binaries/u-boot-rzn1s324-db.bin.spkg
+- - - Windows - - -
+>dfu-util-static.exe -a 'sf_uboot' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\u-boot\binaries\"C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1s324-db.bin.spkg'
+
+In U-boot:
+=>\x03 (Ctrl+C)
+=>setenv -f ethaddr 74:90:50:02:00:FD
+=>setenv -f eth1addr 74:90:50:02:00:FE
+To run code: (After next reset (SW9), the CM3 image is booted and executed automatically by U-boot:
+=>setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3"
+To debug:
+=>setenv bootcmd "mw 0x04000004 1 && rzn1_start_cm3 && loop 0 1"
+=>saveenv
+
+Ready to run ThreadX on A9.
+
+xxx_smp projects are for the N1D.
+(Goal on CM3 not tested yet.)
+To run ThreadX projects (ThreadX only for A9), make sure SW3 is OFF.
+TESTED: 
+- demo_threadx.ewp works.
+- demo_uart.ewp. Sends, does not receive from terminal.
+--------------------------------
+Other N1S notes:
+R9A06G032 = N1D
+R9A06G033 = N1S
+
+
+==========================
+RZN1S IO-Link board setup
+==========================
+LOAD UBOOT
+Hold N1S SW2+press SW9 (SW8=cold reset) to enter USB primary bootloader
+>dfu-util-static.exe -D 'K:\MCU-MPU\RZ\RZ-N\Protocols\IO Link\RZN1S-IO_LINK-M_V1.0-Data\Software\U-Boot\u-boot-rzn1s-io-link.bin.spkg'
+=>env default -f dfu_ext_info
+=>saveenv
+
+CLEAR FLASH + DOWNLOAD UBOOT=>FLASH
+Ensure the U-Boot/SPL region of QSPI Flash is erased
+=>sf probe
+=>sf erase 0 10000
+=>dfu
+>dfu-util-static.exe  -a "sf_uboot“ -D 
+'K:\MCU-MPU\RZ\RZ-N\Protocols\IO Link\RZN1S-IO_LINK-M_V1.0-Data\Software\U-Boot\u-boot-rzn1s-io-link.bin.spkg'
+
+WRITE CM3 IMAGE
+=>dfu
+>dfu-util-static.exe  -a “sf_cm3“ -D 'K:\MCU-MPU\RZ\RZ-N\Protocols\IO Link\RZN1S-IO_LINK-M_V1.0-Data\Software\2018_09_17_CM3.bin‘
+Or? 
+>dfu-util-static.exe  -a “sf_cm3“ -D 'K:\MCU-MPU\RZ\RZ-N\Protocols\IO Link\2018_09_17_CC-Core_with_deactivated_GOAL_output\2018_09_17_CM3.bin'
+
+WRITE A7 KERNEL
+=>dfu
+>dfu-util-static.exe  -a “sf_kernel“ -D 'K:\MCU-MPU\RZ\RZ-N\Protocols\IO Link\RZN1S-IO_LINK-M_V1.0-Data\Software\2018_09_17_A7_IOL.bin'
+Set boot commands
+=>setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && sf read 0x80008000 1d0000 600000 && dcache off && go 0x80008000"
+=>saveenv
+=>boot
+========================================
