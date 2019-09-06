@@ -17,7 +17,7 @@ Copy the root.fs containing the tree and unzip
 >cd /media/usb0/
 Remove old files.
 >sudo rm -fr *
->sudo cp ~/RZN/rzn1_linux-4.9_bsp/output/buildroot-2017.02/output/images/rootfs.tar ./
+>sudo cp ~/RZN/rzn1_linux_bsp/output/buildroot-2017.02/output/images/rootfs.tar ./
 >sudo tar xfv rootfs.tar
 Before removing from PC:
 Flush cache
@@ -29,7 +29,7 @@ OBSERVE: Set bootargs like this to test.
 Tested SD cards: SanDisk 2 GB, GB, 16 GB.
 
 (- To a usb-stick:
->sudo cp /home/sven/RZ-N/rzn1_linux-4.9_bsp/output/buildroot-2017.02/output/images/rootfs.tar /media/sven/x)
+>sudo cp /home/sven/RZ-N/rzn1_linux_bsp/output/buildroot-2017.02/output/images/rootfs.tar /media/sven/x)
 Tested micro SD cards and Sandisk 16 GB SDHC card.
 
 
@@ -40,7 +40,7 @@ Adding MMC experimentally
 -------------------------
 In DTS:
 Change the fdt_chosen structure in 
-file:///home/sven/RZ-N/rzn1_linux-4.9_bsp/output/linux-4.9/arch/arm/boot/dts/rzn1d400-db.dts
+file:///home/sven/RZ-N/rzn1_linux_bsp/output/linux-4.9/arch/arm/boot/dts/rzn1d400-db.dts
 USE/OVERRIDE it by doing this at u-boot prompt:
 =>sf probe
 =>sf read 0x8ffe0000 b0000 20000

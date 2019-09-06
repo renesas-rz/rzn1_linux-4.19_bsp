@@ -6,7 +6,7 @@
 ************************************************
 
 ===================================
-1. Unzip rzn1_linux-4.9_bsp.zip to your Linux host PC.
+1. Unzip rzn1_linux_bsp.zip to your Linux host PC.
 =================================
 a). If you received USB package as a zip-file.
 You should now see:
@@ -22,8 +22,8 @@ Create a username and password at https://github.com, and clone the git repo to 
 REA may need to share the repo with you.
 $>cd .../rzn1_univ_build (or what you wish to name it.
 $>git init
-$>git clone https://github.com/renesas-rz/rzn1_linux-4.9_bsp.git
-$>cd renesas-rz/rzn1_linux-4.9_bsp
+$>git clone https://github.com/renesas-rz/rzn1_linux_bsp.git
+$>cd renesas-rz/rzn1_linux_bsp
 $>git checkout -b rzn1-next-yourname v4.9
 ..
 
@@ -50,7 +50,7 @@ sudo chown -R username ./
 Build the root file system:
 >./build.sh buildroot
 Specifically we are interested in the rootfs.tar output:
-~/RZ-N/rzn1_linux-4.9_bsp/output/buildroot-2017.02/output/images/rootfs.tar
+~/RZ-N/rzn1_linux_bsp/output/buildroot-2017.02/output/images/rootfs.tar
 See rzn-u-boot-guide.txt how to use.
 
 
@@ -96,13 +96,13 @@ You should stick to the Renesas released binary to start with as it is tailored 
 >$./build.sh u-boot
 The output is in ./output/u-boot/u-boot.bin 
 You'll need to convert it to an spkg image. See the Linux & U-boot guide, but here is example
->$cd ~/RZ-N/rzn1_linux-4.9_bsp/output/u-boot/
+>$cd ~/RZ-N/rzn1_linux_bsp/output/u-boot/
 >$~/RZ-N/YCONNECT-IT-RZN/Software/U-Boot-and-Linux/u-boot/binaries/spkg_utility -i ./u-boot.bin -o  ./u-boot-rzn1db400-rea-47619047.spkg --padding 64K --load_address 0x200a0000 --nand_ecc_enable --nand_ecc_blksize 1 --nand_ecc_scheme 1 --nand_bytes_per_ecc_block 7 --add_dummy_blp
 Download the new U-boot image to SRAM. (Hold SW5, press SW3.)
->sudo dfu-util -D ~/RZ-N/rzn1_linux-4.9_bsp/output/u-boot/u-boot-rzn1db400-rea-jan30.spkg
+>sudo dfu-util -D ~/RZ-N/rzn1_linux_bsp/output/u-boot/u-boot-rzn1db400-rea-jan30.spkg
 Flash it to serial QSPI.
 => dfu
-$>sudo dfu-util -a 'sf_spl' -D ~/RZ-N/rzn1_linux-4.9_bsp/output/u-boot/u-boot-rzn1db400-rea-jan30.spkg
+$>sudo dfu-util -a 'sf_spl' -D ~/RZ-N/rzn1_linux_bsp/output/u-boot/u-boot-rzn1db400-rea-jan30.spkg
 
 
 -----------------------------------------------------------------------------------------------------------------
@@ -120,10 +120,10 @@ A few notes on how build.sh works.
         3. Buildroot add rzn support: only applied the very first time after cloning.
         4. Buildroot generic updates: checks each time you build because if there is an update to buildroot, this will fix it up.
         Therefore, to get the latest patches, delete the output folders
-            ../rzn1_linux-4.9_bsp/output/rzn1_linux/
-            ../rzn1_linux-4.9_bsp/output/buildroot-2017.02/
+            ../rzn1_linux_bsp/output/rzn1_linux/
+            ../rzn1_linux_bsp/output/buildroot-2017.02/
     - You can ignore the output..
-                ./build.sh: line 630: /home/sven/RZ-N/rzn1_linux-4.9_bsp/patches-buildroot/buildroot-2017.02/renesas_*.patch: No such file or directory.
+                ./build.sh: line 630: /home/sven/RZ-N/rzn1_linux_bsp/patches-buildroot/buildroot-2017.02/renesas_*.patch: No such file or directory.
         ..as these are extra patches in case you have anything specific to put into the ./patches-buildroot folder.
     - It is not dangerous to use an old .config in a newer version (no incompatibility risk) because updates to the kernel will not mean moving from 4.9 to 4.10/11/12,etc.. it will just be updates to drivers and such. So copying over an old  .config is fine. 
 -----------------------------------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ Build your own app
 ===========
 See README.TXT
 Don't go to the location of the code you want to build. Go to where build.sh script is to set everything up for Buildroot etc. For example:
->cd ~/RZ-N/rzn1_linux-4.9_bsp
+>cd ~/RZ-N/rzn1_linux_bsp
 >./build.sh env 
 >export ROOTDIR=$(pwd) ; source ./setup_env.sh
 >echo $BUILDROOT_DIR
@@ -143,7 +143,7 @@ Example (hello_world):
 >file hello
 
 Example (GOAL):
->cd /media/sf_rzn1_linux-4.9_bsp_vbox
+>cd /media/sf_rzn1_linux_bsp_vbox
 >./build.sh env
 NOW go to where the goal project you want to build is. Example: 
 >cd /media/sf_YCONNECT-IT-RZN_V1.3/Software/GOAL/goal/projects/goal_pnio_rpc_lib/appl/01_simple_io/gcc
@@ -177,7 +177,7 @@ You should see something like
         1* rzn1.cpu.0         cortex_a   little rzn1.dap           halted
 4. Run the client in anothe window.
 >arm-linux-gnueabihf-gdb -tui u-boot
-[>../rzn1_linux-4.9_bsp/output/buildroot-2017.02/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-gdb -tui u-boot]
+[>../rzn1_linux_bsp/output/buildroot-2017.02/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-gdb -tui u-boot]
 target remote localhost:3333
 ...
 
