@@ -70,7 +70,7 @@ Provided binary from CD:
 >cd C:\Workspace\RZN\YCONNECT-IT-RZN\Tools\dfu-util
 To use the provided binary from CD:
 >dfu-util[-static] -a 'sf_dtb' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\kernel\binaries\uImage-rzn1d400-db.dtb'
-Your own build DTB, copied after build: In this case built under linux and copied: cp ~/rzn1_linux-4.9_bsp2/output/rzn1_linux/arch/arm/boot/dts/rzn1d400-db-both-gmacs.dtb /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/rzn1d400-db-both-gmacs_rea.dtb
+Your own build DTB, copied after build: In this case built under linux and copied: cp ~/rzn1_linux_bsp/output/rzn1_linux/arch/arm/boot/dts/rzn1d400-db-both-gmacs.dtb /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/rzn1d400-db-both-gmacs_rea.dtb
 > dfu-util-static.exe -a 'sf_dtb' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\kernel\binaries\rzn1d400-db-both-gmacs_rea.dtb'
 TSN demo example:
 >dfu-util[-static] -a 'sf_dtb' -D 'C:\Workspace\RZN\TSN\TSN-Demo-2017\SPS_DEMO_2017\images\linux\rzn1d400-db.dtb'
