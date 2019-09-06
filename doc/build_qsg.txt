@@ -24,8 +24,8 @@ If using BUILD.SH (Should make life ALOT easier for you..)
 ---------------------------------------------------------
 Download 
 https://github.com/renesas-rz/rzn1_linux-4.19_bsp
-Unzip rzn1_linux-4.9_bsp
-$cd ~/rzn1_linux-4.9_bsp
+Unzip rzn1_linux_bsp
+$cd ~/rzn1_linux_bsp
 The first time you build in a directory you must do
 $git init
 $./build.sh config
