@@ -944,11 +944,12 @@ if [ "$1" == "update" ] ; then
 
   if [ "$2" == "k" ] ; then
     if [ ! -e rzn1_linux ] ; then
-      git clone -b rzn1-stable https://github.com/renesas-rz/rzn1_linux.git
+      #git clone -b rzn1-stable       https://github.com/renesas-rz/rzn1_linux.git
+       git clone -b rzn1-stable-v4.19 https://github.com/renesas-rz/rzn1_linux.git
     else
       cd rzn1_linux
       git stash                     # <== user changes saved.
-      git checkout rzn1-stable
+      git checkout rzn1-stable-v4.19
       git pull                      # <== latest updates (ree).
       git stash pop                 # <== user changes reinserted.
     fi
