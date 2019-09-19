@@ -1,9 +1,9 @@
 ****************************************
 See first of all RZ-N1D-System-Setup-Tutorial.pdf.
 ****************************************
-SHORT GUIDE ==========================================
 ------------------------------------------------------
-If not using build.sh; you just want the kernel source
+1. If not using build.sh; you just want the kernel source.
+But please consider doing 2. instead. Should make things much easier.
 ------------------------------------------------------
 $ git clone -b rzn1-stable-v4.19 https://github.com/renesas-rz/rzn1_linux.git
 $ cd rzn1_linux/
@@ -19,37 +19,45 @@ This branch includes the GOAL Core-to-Core (C2C) driver from port GmbH.
 OBSERVE: The C2C driver version must match the GOAL Cortex M3 code version
 
 
----------------------------------------------------------
-If using BUILD.SH (Should make life ALOT easier for you..)
----------------------------------------------------------
-Download 
+=======================================================================================================
+2. We have as script package based on file BUILD.SH. 
+Should make things much easier for you without Yocto.. Please check it out. Go to, and download
+=======================================================================================================
 https://github.com/renesas-rz/rzn1_linux-4.19_bsp
+
 Unzip rzn1_linux_bsp
 $cd ~/rzn1_linux_bsp
+
+
+Unzip rzn1_linux_bsp
+$cd ~/rzn1_linux_bsp
+
 The first time you build in a directory you must do
 $git init
+
+(If you want git which I recommend!
 $./build.sh config
 
-Set root file system for RZ/N
+Set root file system defaults for RZ/N.
 $./build.sh buildroot rzn1_defconfig
 
-To add something you want to root file system (RFS)
+To add something you want to root file system (RFS) but you can use default for now.
 $./build.sh buildroot menuconfig
 
-Add your own files to the linux root file system here
+Add your own files to the linux root file system here - you must create this directory in order to build, even if empty.
 $mkdir output/buildroot-2017.02/output/rootfs_overlay
 
-Build root file system 
+Build root file system
 $./build.sh buildroot
 
 $./build.sh kernel rzn1_defconfig
 Exit and save. After this your configuration will be in the local .config file, and you will subsequently only need do the standard
-
 $./build.sh kernel menuconfig
-Change your kernel the way you want it.
 
+If you need to, change your kernel the way you want it (default is fine for the kernel, and you really should start out using the binary from the DVD).
 $./build.sh kernel uImage
 
+This is all documented. PLEASE SEE THE DOC folder for more details on doing all sorts of things, like loading the RFS to an SD-card and booting from it, etc...
 -------
 To update kernel (no need to do often)
 $./build.sh update k
