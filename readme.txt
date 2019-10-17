@@ -1,7 +1,7 @@
 =====================================================
 See DOCS/RZ-N1D-System-Setup-Tutorial for details
 ===================================================== 
-This package is a build environment for U-Boot, Linux, for building a root file sytem, and cross-compiling added applications.
+This package is a build environment for U-Boot, Linux, for building a root file sytsem with Buildroot, and cross-compiling added applications.
 
 This package includes a build-script, build.sh, which downloads, adds patches, and builds U-Boot, Buildroot, Linux. It also downloads a crosscompiler, installs it, and sets up the environment so that you can cross-compile the kernel for ARM (the RZ/N1 A7) and your own linux applications. It does some other things aswell.
 
