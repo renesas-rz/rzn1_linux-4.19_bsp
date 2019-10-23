@@ -576,17 +576,14 @@ if [ "$1" == "buildroot" ]  || [ "$1" == "b" ] ; then
 
   if [ ! -e br_version.txt ] ; then
     echo "What version of Buildroot do you want to use?"
-    echo "1. buildroot-2016.08"
-    echo "2. buildroot-2017.02"
-    echo "3. buildroot-2018.11"
-    echo -n "(select number)=> "
+    echo "1. buildroot-2018.11.4 (may exist later 2018.11 version)"
+    echo "2. buildroot-2019.02.6 (LTS - may exist later 2019.02 version)"
+    echo -n "(Select number)=> "
     read ANSWER
     if [ "$ANSWER" == "1" ] ; then
-      echo "export BR_VERSION=2016.08" > br_version.txt
+      echo "export BR_VERSION=2018.11.4" > br_version.txt
     elif [ "$ANSWER" == "2" ] ; then
-      echo "export BR_VERSION=2017.02" > br_version.txt
-    elif [ "$ANSWER" == "3" ] ; then
-      echo "export BR_VERSION=2018.11" > br_version.txt
+      echo "export BR_VERSION=2019.02.6" > br_version.txt
     else
       echo "ERROR: \"$ANSWER\" is an invalid selection!"
       exit
@@ -620,50 +617,34 @@ if [ "$1" == "buildroot" ]  || [ "$1" == "b" ] ; then
 
   cd buildroot-$BR_VERSION
 
-  # If it's an LTS version, apply any update patches
+  # If it's an LTS version, apply any update patches    //TODO
   if [ "$BR_VERSION" == "2017.02" ] ; then
 
     CHECK=`grep " BR2_VERSION " Makefile`
-    if [ "$CHECK" == "export BR2_VERSION := 2017.02" ] ; then
-      banner_yellow "Updating Buildroot version from 2017.02 to 2017.02.1"
+    if [ "$CHECK" == "export BR2_VERSION := 2019.02" ] ; then
+      banner_yellow "Updating Buildroot version from 2019.02 to 2019.02.1"
       sleep 1
-      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2017.02.0_to_2017.02.1.patch
+      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.0_to_2019.02.1.patch
     fi
 
     CHECK=`grep " BR2_VERSION " Makefile`
-    if [ "$CHECK" == "export BR2_VERSION := 2017.02.1" ] ; then
-      banner_yellow "Updating Buildroot version from 2017.02.1 to 2017.02.2"
+    if [ "$CHECK" == "export BR2_VERSION := 2019.02.1" ] ; then
+      banner_yellow "Updating Buildroot version from 2019.02.1 to 2019.02.2"
       sleep 1
-      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2017.02.1_to_2017.02.2.patch
+      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.1_to_2019.02.2.patch
     fi
 
     CHECK=`grep " BR2_VERSION " Makefile`
-    if [ "$CHECK" == "export BR2_VERSION := 2017.02.2" ] ; then
-      banner_yellow "Updating Buildroot version from 2017.02.2 to 2017.02.3"
+    if [ "$CHECK" == "export BR2_VERSION := 2019.02.2" ] ; then
+      banner_yellow "Updating Buildroot version from 2019.02.2 to 2019.02.3"
       sleep 1
-      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2017.02.2_to_2017.02.3.patch
-    fi
-
-    CHECK=`grep " BR2_VERSION " Makefile`
-    if [ "$CHECK" == "export BR2_VERSION := 2017.02.3" ] ; then
-      banner_yellow "Updating Buildroot version from 2017.02.3 to 2017.02.4"
-      sleep 1
-      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2017.02.3_to_2017.02.4.patch
-    fi
-
-    CHECK=`grep " BR2_VERSION " Makefile`
-    if [ "$CHECK" == "export BR2_VERSION := 2017.02.4" ] ; then
-      banner_yellow "Updating Buildroot version from 2017.02.4 to 2017.02.5"
-      sleep 1
-      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2017.02.4_to_2017.02.5.patch
+      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.2_to_2019.02.3.patch
     fi
 
     # Created by doing:
-    #   git diff 2017.02   2017.02.1 > br_2017.02.0_to_2017.02.1.patch
-    #   git diff 2017.02.1 2017.02.2 > br_2017.02.1_to_2017.02.2.patch
-    #   git diff 2017.02.2 2017.02.3 > br_2017.02.2_to_2017.02.3.patch
-    #   git diff 2017.02.3 2017.02.4 > br_2017.02.3_to_2017.02.4.patch
-    #   git diff 2017.02.4 2017.02.5 > br_2017.02.4_to_2017.02.5.patch
+    #   git diff 2019.02   2019.02.1 > br_2019.02.0_to_2019.02.1.patch
+    #   git diff 2019.02.1 2019.02.2 > br_2019.02.1_to_2019.02.2.patch
+    #   git diff 2019.02.2 2019.02.3 > br_2019.02.2_to_2019.02.3.patch
   fi
 
   if [ ! -e output ] ; then
@@ -677,8 +658,8 @@ if [ "$1" == "buildroot" ]  || [ "$1" == "b" ] ; then
 
  # Patch and Configure Buildroot for RZ/N
   if [ ! -e configs/rzn1_defconfig ]; then
-
-    # Apply Renesas Buildroot patches (beging with renesas_)
+    echo $BR_VERSION
+    # Apply Renesas Buildroot patches (begin with renesas_)
     for i in $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/renesas_*.patch; do patch -p1 < $i; done
 
     # Ask the user if they want to use the glib based Linaro toolchain

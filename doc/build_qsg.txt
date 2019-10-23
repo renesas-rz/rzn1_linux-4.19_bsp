@@ -41,11 +41,12 @@ $./build.sh config
 Set root file system defaults for RZ/N.
 $./build.sh buildroot rzn1_defconfig
 
-To add something you want to root file system (RFS) but you can use default for now.
+To add something you want to root file system (RFS), but you can use default for now.
 $./build.sh buildroot menuconfig
 
-Add your own files to the linux root file system here - you must create this directory in order to build, even if empty.
-$mkdir output/buildroot-2017.02/output/rootfs_overlay
+To add your own files to the linux root file system, put them in the buildroot build output folder "rootfs_overlay".
+You +must+ create this folder in order to build, even if empty.
+$mkdir output/buildroot-xyz/output/rootfs_overlay
 
 Build root file system
 $./build.sh buildroot
