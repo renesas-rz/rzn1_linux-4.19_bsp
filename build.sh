@@ -618,34 +618,34 @@ if [ "$1" == "buildroot" ]  || [ "$1" == "b" ] ; then
   cd buildroot-$BR_VERSION
 
   # If it's an LTS version, apply any update patches    //TODO
-  if [ "$BR_VERSION" == "2017.02" ] ; then
+    #   if [ "$BR_VERSION" == "2019.02" ] ; then
+    # 
+    #     CHECK=`grep " BR2_VERSION " Makefile`
+    #     if [ "$CHECK" == "export BR2_VERSION := 2019.02" ] ; then
+    #       banner_yellow "Updating Buildroot version from 2019.02 to 2019.02.1"
+    #       sleep 1
+    #       patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.0_to_2019.02.1.patch
+    #     fi
+    # 
+    #     CHECK=`grep " BR2_VERSION " Makefile`
+    #     if [ "$CHECK" == "export BR2_VERSION := 2019.02.1" ] ; then
+    #       banner_yellow "Updating Buildroot version from 2019.02.1 to 2019.02.2"
+    #       sleep 1
+    #       patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.1_to_2019.02.2.patch
+    #     fi
+    # 
+    #     CHECK=`grep " BR2_VERSION " Makefile`
+    #     if [ "$CHECK" == "export BR2_VERSION := 2019.02.2" ] ; then
+    #       banner_yellow "Updating Buildroot version from 2019.02.2 to 2019.02.3"
+    #       sleep 1
+    #       patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.2_to_2019.02.3.patch
+    #     fi
 
-    CHECK=`grep " BR2_VERSION " Makefile`
-    if [ "$CHECK" == "export BR2_VERSION := 2019.02" ] ; then
-      banner_yellow "Updating Buildroot version from 2019.02 to 2019.02.1"
-      sleep 1
-      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.0_to_2019.02.1.patch
-    fi
-
-    CHECK=`grep " BR2_VERSION " Makefile`
-    if [ "$CHECK" == "export BR2_VERSION := 2019.02.1" ] ; then
-      banner_yellow "Updating Buildroot version from 2019.02.1 to 2019.02.2"
-      sleep 1
-      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.1_to_2019.02.2.patch
-    fi
-
-    CHECK=`grep " BR2_VERSION " Makefile`
-    if [ "$CHECK" == "export BR2_VERSION := 2019.02.2" ] ; then
-      banner_yellow "Updating Buildroot version from 2019.02.2 to 2019.02.3"
-      sleep 1
-      patch -s -p1 -i $ROOTDIR/patches-buildroot/buildroot-$BR_VERSION/br_2019.02.2_to_2019.02.3.patch
-    fi
-
-    # Created by doing:
-    #   git diff 2019.02   2019.02.1 > br_2019.02.0_to_2019.02.1.patch
-    #   git diff 2019.02.1 2019.02.2 > br_2019.02.1_to_2019.02.2.patch
-    #   git diff 2019.02.2 2019.02.3 > br_2019.02.2_to_2019.02.3.patch
-  fi
+        # Created by doing:
+        #   git diff 2019.02   2019.02.1 > br_2019.02.0_to_2019.02.1.patch
+        #   git diff 2019.02.1 2019.02.2 > br_2019.02.1_to_2019.02.2.patch
+        #   git diff 2019.02.2 2019.02.3 > br_2019.02.2_to_2019.02.3.patch
+    #fi
 
   if [ ! -e output ] ; then
     mkdir -p output
