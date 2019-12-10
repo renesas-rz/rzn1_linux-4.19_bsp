@@ -413,8 +413,9 @@ if [ "$1" == "kernel" ] || [ "$1" == "k" ] ; then
       banner_green "Kernel Build Successful"
     fi
   else
-      # user wants to build something special
+      # User wants to build something special, e.g. the by $2 given dtb.
       banner_yellow "Custom Build"
+      echo "For example build DTB $2 $3"
       echo -e "make -j$BUILD_THREADS $2 $3 $4\n"
       make -j$BUILD_THREADS $2 $3 $4
   fi
@@ -483,7 +484,9 @@ if [ "$1" == "u-boot" ] || [ "$1" == "u" ] ; then
   git checkout -b rzn1 v2017.01
   
   # Set the BSP version to according to the release, for example:
-  BSP_VERSION=v1.4.4
+  #BSP_VERSION=v1.4.4
+  BSP_VERSION=v1.5.3
+  echo -e BSP_VERSION=$BSP_VERSION
   
   # Fetch the RZ/N1 branch and merge it in:
   git remote add renesas-rz https://github.com/renesas-rz/rzn1_u-boot.git
