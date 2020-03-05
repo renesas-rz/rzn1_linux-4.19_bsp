@@ -1,8 +1,8 @@
 ************************************************
- Renesas Technology America, Inc.
- Board prep QUICK SYNTAX GUIDE
- 
- FOR A NEW BOARD YOU MUST FOLLOW ORDER BELOW!
+ Renesas Technology America, Inc. 2020.
+ - BOARD PREP QUICK SYNTAX AID -
+
+FOR A NEW BOARD YOU MUST FOLLOW ORDER BELOW
 ************************************************
 
 ===================================
@@ -13,13 +13,13 @@ To use the latest binary from Renesas, e.g. ../YCONNECT-IT-RZN/Software/U-Boot-a
     ** BOOTLOADER STAGE0 for RZN1 **
     Boot source: USB
 
-- - -Linux - - -
+- - - Linux  terminal - - -
 Use dfu-util to download u-boot to RAM:
 1) If first time (BOOT WITH SWITCHES):
 Capture Devices=>USB=>RZ/N DFU  from the Linux VBox
 >sudo dfu-util -D /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/u-boot/binaries/u-boot-rzn1d400-db.bin.spkg
 Board should boot to U-Boot.
-2) If download U-Boot to flash only (already running U-Boot, but need new version.)
+2) Download U-Boot to flash. Also use when already running U-Boot, but need new version.
 => env default -f dfu_ext_info
 => saveenv
 => sf probe
@@ -29,74 +29,113 @@ Capture Devices=>USB=>Renesas USB download gadget
 >sudo dfu-util -a 'sf_uboot' -D /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/u-boot/binaries/u-boot-rzn1d400-db.bin.spkg
 => \x03  (Ctrl+C)
 
-- - -Windows- - - USE POWERSHELL
+- - - Windows terminal - - - USE POWERSHELL
 1) If first time (BOOT WITH SWITCHES):
 Use dfu-util to download u-boot to RAM:
 >cd C:\Workspace\RZN\YCONNECT-IT-RZN\Tools\dfu-util
->dfu-util[-static] -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1d400-db.bin.spkg'
+>dfu-util[-static] dfu-util -D 'C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1d400-db.bin.spkg'
 - WITH OR WITHOUT APOSTROPHES, depends on terminal.
 Board should boot to U-Boot.
-2) If download U-Boot to flash only (already running U-Boot, but need new version.)
-At U-boot  serial terminal:
+2) Download U-Boot to flash. Also use when already running U-Boot, but need new version.
+At U-boot serial terminal:
 => env default -f dfu_ext_info
 => saveenv
 => sf probe
 => sf erase 0 10000
 => dfu
->dfu-util[-static] -a 'sf_uboot' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1d400-db.bin.spkg'
+>dfu-util[-static] -a 'sf_uboot' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1d400-db.bin.spkg'
 =>\x03  (Ctrl+C)
 
 Observe 'sf_spl' is the first region of QSPI, and sf_uboot is the second. Try 'sf_spl' if your u-boot does not run.
 Press SW3 to reboot. You should see the date of u-boot changed.
-
-
-LAB to boot DB board; add
-setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 rootwait init=/init clk_ignore_unused"
-Or if ethernet connected:
-setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 init=/init rootwait ip=192.168.1.50:::::eth0 clk_ignore_unused"
-setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 4 && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 f00000 && bootm 0x80008000 - 0x8ffe0000"
-
 
 ===================================
 Download DTB (Device Tree) to QSPI
 ===================================
 [From U-Boot terminal] => dfu
 [From PC] 
-- - -Linux - - -
->sudo dfu-util -a 'sf_dtb' -D ./output/rzn1_linux/arch/arm/boot/dts/rzn1d400-db.dtb
+- - - Linux  terminal - - -
 Provided binary from CD:
 >sudo dfu-util -a 'sf_dtb' -D /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/uImage-rzn1d400-db.dtb 
-- - -Windows - - -
+Your own build:
+>sudo dfu-util -a 'sf_dtb' -D ./output/rzn1_linux/arch/arm/boot/dts/rzn1d400-db.dtb
+
+- - - Windows terminal - - - USE POWERSHELL
 >cd C:\Workspace\RZN\YCONNECT-IT-RZN\Tools\dfu-util
 To use the provided binary from CD:
 >dfu-util[-static] -a 'sf_dtb' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\kernel\binaries\uImage-rzn1d400-db.dtb'
-Your own build DTB, copied after build: In this case built under linux and copied: cp ~/rzn1_linux_bsp/output/rzn1_linux/arch/arm/boot/dts/rzn1d400-db-both-gmacs.dtb /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/rzn1d400-db-both-gmacs_rea.dtb
 > dfu-util-static.exe -a 'sf_dtb' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\kernel\binaries\rzn1d400-db-both-gmacs_rea.dtb'
+Your own build DTB, copied after build: In this case built under linux and copied:
+cp ~/rzn1_linux_bsp/output/rzn1_linux/arch/arm/boot/dts/rzn1d400-db-both-gmacs.dtb /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/rzn1d400-db-both-gmacs_rea.dtb
 TSN demo example:
 >dfu-util[-static] -a 'sf_dtb' -D 'C:\Workspace\RZN\TSN\TSN-Demo-2017\SPS_DEMO_2017\images\linux\rzn1d400-db.dtb'
-
 
 ===================================
 Download kernel
 ===================================
 Download linux kernel to QSPI:
 [From U-Boot terminal] => dfu
-- - -Linux - - -
+- - - Linux  terminal - - -
 >sudo dfu-util -a 'sf_kernel' -D output/rzn1_linux/arch/arm/boot/uImage
 Or, with prebuilt binary
 >sudo dfu-util -a 'sf_kernel' -D /media/sf_YCONNECT-IT-RZN/Software/U-Boot-and-Linux/kernel/binaries/uImage
-- - - Windows- - -
->dfu-util[-static] -a 'sf_kernel' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN\Software\U-Boot-and-Linux\kernel\binaries\uImage'
 
+- - - Windows terminal - - - USE POWERSHELL
+>dfu-util[-static] -a 'sf_kernel' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\U-Boot-and-Linux\kernel\binaries\uImage'
+
+==================================
+Boot linux
+==================================
+setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 rootwait init=/init clk_ignore_unused"
+If ethernet connected:
+setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 init=/init rootwait ip=192.168.1.50:::::eth0 clk_ignore_unused"
+
+-----------------------------
+Debug CM3 while running linux
+-----------------------------
+setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 4 && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 f00000 && bootm 0x80008000 - 0x8ffe0000"
 
 ===================================
-Download CM3 application
+Download CM3 application to flash
 ===================================
+From U-Boot: 
 => dfu
-- - - Windows- - - USE WINDOWS POWERSHELL
->dfu-util.exe -a "sf_cm3" -D "rzn1d_demo_board.bin" <=Observe *.OUT binary contains debug info.
-For ex. 
->dfu-util -a "sf_cm3" -D C:\Workspace\RZN\Port-Goal\GOAL_.x.y\Applications\2018001_vx_y_renesas_rzn_rc_source_ci153\projects\00410_goal\tcp_server\iar\renesas\rzn1d_demo_board_eb\Debug-RAM\Exe\rzn1d_demo_board_eb.bin
-- - -Linux - - -
-In Linux:
+
+- - - Linux  terminal - - -
 sudo dfu-util -a "sf_cm3" -D "rzn1d_demo_board.bin"
+
+- - - Windows terminal - - - USE POWERSHELL
+>dfu-util.exe -a "sf_cm3" -D "rzn1d_demo_board.bin" <= Observe *.OUT binary contains debug info. You want the Raw binary .BIN.
+For ex. 
+>dfu-util -a 'sf_cm3' -D C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\GOAL\projects\00410_goal\chase_lights\iar\renesas\rzn1d_demo_board\Debug-RAM\Exe\chase_lights.bin
+
+===================================
+Run CM3 from flash, debug A7
+===================================
+=> setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3"
+(=> boot) <= boots automatically after bootdelay.
+
+===================================
+Download A7 application to flash
+===================================
+From U-Boot: 
+=> dfu
+
+- - - Linux  terminal - - -
+sudo dfu-util -a "sf_kernel" -D "rzn1d_demo_board.bin"
+
+- - - Windows terminal - - - USE POWERSHELL
+>dfu-util.exe -a "sf_kernel" -D "rzn1d_demo_board.bin" <= Observe *.OUT binary contains debug info. You want the Raw binary .BIN.
+For ex. 
+>dfu-util -a 'sf_kernel' -D C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\ThreadX\rzn1\iar\demo_threadx\Debug\Exe\demo_threadx.bin
+
+From U-Boot: 
+=> setenv bootcmd "dcache off&&sf probe && sf read 0x80008000 1d0000 600000 && go 0x80008000"
+=> saveenv
+
+===================================
+Run CM3 + A7 from flash
+===================================
+=> setenv bootdelay '8'	<= so you can see them start: cm3 8 sec after boot, a7 8 seconds after cm3.
+=> setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 8 && dcache off && sf probe && sf read 0x80008000 1d0000 600000 && go 0x80008000"
+(=> boot) <= boots automatically after bootdelay.

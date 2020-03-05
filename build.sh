@@ -503,11 +503,26 @@ if [ "$1" == "u-boot" ] || [ "$1" == "u" ] ; then
   # Setup configuration for Renesas RZ/N1L-DB Board
   #make rzn1l-db_config
   
+  # Configure u-boot
+  if [ ! -e .config ] ;then
+      make ${UBOOTCONFIG}
+  fi
+
+  # re-configure u-boot if we changed target board
+  CHECK=$(grep $UBOOTBOARD .config)
+  if [ "$CHECK" == "" ] ; then
+    echo "Reconfiguring for new board..."
+    make ${UBOOTCONFIG}
+  fi
+
   # Build U-Boot
   if [ "$2" == "" ] ;then
+    # Remove any old build.
+    rm u-boot.bin
 
     # default build
     make
+    
     if [ ! -e u-boot.bin ] ; then
       # did not build, so exit
       banner_red "u-boot Build failed. Exiting build script."
@@ -526,46 +541,6 @@ if [ "$1" == "u-boot" ] || [ "$1" == "u" ] ; then
 
   echo -e "The Elf executable is stored as 'u-boot' but must be converted to a Renesas SPKG image before download via DFU."
   echo -e "DONE build u-boot.\n"
-
-  exit  
-  
-  # ====================================================================
-  # Rest of u-boot section below not used but kept in case needed for later(!)
-  # ====================================================================
-  
-  # Configure u-boot
-  if [ ! -e .config ] ;then
-    make ${UBOOTCONFIG}
-  fi
-
-  # re-configure u-boot if we changed target board
-  CHECK=$(grep $UBOOTBOARD .config)
-  if [ "$CHECK" == "" ] ; then
-    echo "Reconfiguring for new board..."
-    make ${UBOOTCONFIG}
-  fi
-
-  # Build u-boot
-  if [ "$2" == "" ] ;then
-
-    # default build
-    make
-
-    if [ ! -e u-boot.bin ] ; then
-      # did not build, so exit
-      banner_red "u-boot Build failed. Exiting build script."
-      exit
-    else
-      banner_green "u-boot Build Successful"
-    fi
-  else
-      # user wants to build something special
-      banner_yellow "Custom Build"
-      echo -e "make $2 $3 $4\n"
-      make $2 $3 $4
-  fi
-
-  cd $ROOTDIR
 
 fi
 
