@@ -33,7 +33,7 @@ Capture Devices=>USB=>Renesas USB download gadget
 1) If first time (BOOT WITH SWITCHES):
 Use dfu-util to download u-boot to RAM:
 >cd C:\Workspace\RZN\YCONNECT-IT-RZN\Tools\dfu-util
->dfu-util[-static] dfu-util -D 'C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1d400-db.bin.spkg'
+>dfu-util[-static] -D 'C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\U-Boot-and-Linux\u-boot\binaries\u-boot-rzn1d400-db.bin.spkg'
 - WITH OR WITHOUT APOSTROPHES, depends on terminal.
 Board should boot to U-Boot.
 2) Download U-Boot to flash. Also use when already running U-Boot, but need new version.
@@ -90,10 +90,10 @@ setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 root
 If ethernet connected:
 setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 init=/init rootwait ip=192.168.1.50:::::eth0 clk_ignore_unused"
 
------------------------------
+==================================
 Debug CM3 while running linux
------------------------------
-setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 4 && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 f00000 && bootm 0x80008000 - 0x8ffe0000"
+==================================
+setenv bootcmd "mw 0x04000004 1 && rzn1_start_cm3 && sleep 10 && sf probe && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 600000 && bootm 0x80008000 - 0x8ffe0000"
 
 ===================================
 Download CM3 application to flash
