@@ -33,8 +33,9 @@ export BUILDROOT_DIR=$OUTDIR/buildroot-$BR_VERSION
 # Toolchain directory (for u-boot and kernel)
 if [ -e $OUTDIR/buildroot-$BR_VERSION/output/host ] ; then
 
-  export TOOLCHAIN_DIR=$OUTDIR/host/usr
-
+  #export TOOLCHAIN_DIR=$OUTDIR/host/usr
+  export TOOLCHAIN_DIR=$OUTDIR/buildroot-$BR_VERSION/output/host/usr
+  
   # set toolchain prefix and add to path
   cd $OUTDIR/buildroot-$BR_VERSION/output/host/usr/bin
   export CROSS_COMPILE=`ls *gnueabi*-gcc | sed 's/gcc//'`

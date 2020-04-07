@@ -21,3 +21,16 @@ It will do the following automatically for you when you run it.
 •	Sets up build environment variables
 •	Downloads source code
 •	Applies patches to source code
+
+-----------------------------------------------------
+These are  env. vars setup for buildrot and for cross-compiling. (Examples.)
+ROOTDIR=~//rzn_dev_setup/rzn1_linux-4.19_bsp
+OUTDIR=~//rzn_dev_setup/rzn1_linux-4.19_bsp/output
+PATH=~//rzn_dev_setup/rzn1_linux-4.19_bsp/output/buildroot-2019.02.6/output/host/usr/bin:~//bin:~//.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+PWD=~//rzn_dev_setup/rzn1_linux-4.19_bsp
+TOOLCHAIN_DIR=~//rzn_dev_setup/rzn1_linux-4.19_bsp/output/buildroot-2019.02.6/output/host/usr
+ARCH=arm
+CROSS_COMPILE=arm-linux-gnueabihf-
+PROFILEHOME=~//RZN
+BUILDROOT_DIR=~//rzn_dev_setup/rzn1_linux-4.19_bsp/output/buildroot-2019.02.6
+-----------------------------------------------------
