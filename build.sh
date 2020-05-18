@@ -485,7 +485,8 @@ if [ "$1" == "u-boot" ] || [ "$1" == "u" ] ; then
   
   # Set the BSP version to according to the release, for example:
   #BSP_VERSION=v1.4.4
-  BSP_VERSION=v1.5.3
+  #BSP_VERSION=v1.5.3
+  BSP_VERSION=v1.6.1
   echo -e BSP_VERSION=$BSP_VERSION
   
   # Fetch the RZ/N1 branch and merge it in:
