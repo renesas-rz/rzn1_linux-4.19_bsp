@@ -113,7 +113,8 @@ For ex.
 Run CM3 from flash, debug A7
 ===================================
 => setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3"
-(=> boot) <= boots automatically after bootdelay.
+=> boot (Boots automatically after bootdelay if you did =>saveenv after above.)
+Now you should be able to debug A7.
 
 ===================================
 Download A7 application to flash
@@ -136,6 +137,6 @@ From U-Boot:
 ===================================
 Run CM3 + A7 from flash
 ===================================
-=> setenv bootdelay '8'	<= so you can see them start: cm3 8 sec after boot, a7 8 seconds after cm3.
+=> setenv bootdelay '8'	<= so you can see them start: m3 8 sec after boot, a7 8 seconds after cm3.
 => setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 8 && dcache off && sf probe && sf read 0x80008000 1d0000 600000 && go 0x80008000"
 (=> boot) <= boots automatically after bootdelay.
