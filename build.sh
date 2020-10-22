@@ -336,13 +336,19 @@ if [ "$1" == "kernel" ] || [ "$1" == "k" ] ; then
 
     #git clone -b rzn1-stable https://github.com/renesas-rz/rzn1_linux.git
     git clone -b rzn1-stable-v4.19 https://github.com/renesas-rz/rzn1_linux.git
-    
-    echo ""
     echo "Downloaded rzn1_linux kernel."
+    echo ""
   fi
-
+  
+  #Enter the new source dir.
   cd rzn1_linux
   
+  #Set BSP version of linux.
+  BSP_VERSION=v1.7.0
+  
+  #Checkout a Tag from https://github.com/renesas-rz/rzn1_linux/tags
+  git checkout rzn1-$BSP_VERSION
+   
   # build
   IMG_BUILD=0
   XIPCHECK=`grep -s CONFIG_XIP_KERNEL=y .config`
@@ -353,7 +359,7 @@ if [ "$1" == "kernel" ] || [ "$1" == "k" ] ; then
     if [ ! -e .config ] || [ "$XIPCHECK" != "" ]; then
       # Need to configure kernel first
       #make ${BOARD}_defconfig
-	make ${KERNELCONFIG}
+      make ${KERNELCONFIG}
     fi
     # re-configure kernel if we changed target board
     #CHECK=$(grep -i CONFIG_MACH_${BOARD}=y .config )
@@ -362,6 +368,7 @@ if [ "$1" == "kernel" ] || [ "$1" == "k" ] ; then
     #  make ${BOARD}_defconfig
     #fi
 
+    # Build linux binary.
     # To build a uImage, you need to specify LOADADDR.
     if [ "$BOARD" == "rzn1d" ] || [ "$BOARD" == "rzn1s" ] ; then
       MY_LOADADDR='LOADADDR=0x80008000'
