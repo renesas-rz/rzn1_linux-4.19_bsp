@@ -84,7 +84,7 @@ Or, with prebuilt binary
 >dfu-util[-static] -a 'sf_kernel' -D 'C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\U-Boot-and-Linux\kernel\binaries\uImage'
 
 ==================================
-Boot linux
+Boot linux from SD
 ==================================
 setenv bootargs "console=ttyS0,115200 earlyprintk debug root=/dev/mmcblk0p1 rootwait init=/init clk_ignore_unused"
 If ethernet connected:
@@ -131,12 +131,35 @@ For ex.
 >dfu-util -a 'sf_kernel' -D C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.2\Software\ThreadX\rzn1\iar\demo_threadx\Debug\Exe\demo_threadx.bin
 
 From U-Boot: 
-=> setenv bootcmd "dcache off&&sf probe && sf read 0x80008000 1d0000 600000 && go 0x80008000"
+=> setenv bootcmd "dcache off && sf probe && sf read 0x80008000 1d0000 600000 && go 0x80008000"
 => saveenv
 
 ===================================
 Run CM3 + A7 from flash
 ===================================
 => setenv bootdelay '8'	<= so you can see them start: m3 8 sec after boot, a7 8 seconds after cm3.
+
+With IAR binaries in flash.
 => setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 8 && dcache off && sf probe && sf read 0x80008000 1d0000 600000 && go 0x80008000"
+
+With Linux and its DTB in flash:
+=> setenv bootcmd "sf probe && sf read 0x4000000 d0000 80000 && rzn1_start_cm3 && sleep 8 && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 f00000 && bootm 0x80008000 - 0x8ffe0000"
 (=> boot) <= boots automatically after bootdelay.
+
+=========================================
+Filesystem in flash
+=========================================
+From U-Boot: 
+=> dfu
+
+- - - Linux  terminal - - -
+sudo dfu-util -a "sf_data" -D core-image-minimal-rzn1.squashfs
+
+- - - Windows terminal - - - USE POWERSHELL
+dfu-util.exe -a "sf_data" -D "core-image-minimal-rzn1.squashfs"
+Example:lsls
+dfu-util.exe -a "sf_data" -D C:\Workspace\RZN\YCONNECT-IT-RZN_V1.4.3\Software\U-Boot-and-Linux\kernel\binaries\core-image-minimal-rzn1.squashfs
+
+setenv bootargs "console=ttyS0,115200 root=/dev/mtdblock7 init=/init rootwait ip=192.168.1.50:::::eth0 earlyprintk clk_ignore_unused"
+setenv bootcmd "sf probe && sf read 0x8ffe0000 b0000 20000 && sf read 0x80008000 1d0000 600000 && bootm 0x80008000 - 0x8ffe0000"
+

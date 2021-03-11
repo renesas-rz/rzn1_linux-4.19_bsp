@@ -564,12 +564,15 @@ if [ "$1" == "buildroot" ]  || [ "$1" == "b" ] ; then
     echo "What version of Buildroot do you want to use?"
     echo "1. buildroot-2018.11.4 (may exist later 2018.11 version)"
     echo "2. buildroot-2019.02.6 (LTS - may exist later 2019.02 version)"
+    echo "3. buildroot-2020.02.07"
     echo -n "(Select number)=> "
     read ANSWER
     if [ "$ANSWER" == "1" ] ; then
       echo "export BR_VERSION=2018.11.4" > br_version.txt
     elif [ "$ANSWER" == "2" ] ; then
       echo "export BR_VERSION=2019.02.6" > br_version.txt
+    elif [ "$ANSWER" == "3" ] ; then
+      echo "export BR_VERSION=2020.02.7" > br_version.txt
     else
       echo "ERROR: \"$ANSWER\" is an invalid selection!"
       exit
@@ -718,8 +721,8 @@ if [ "$1" == "buildroot" ]  || [ "$1" == "b" ] ; then
   if [ "$2" == "trim" ] ;then
 
     echo "This will remove a good portion of intermediate build files under"
-    echo "under the output/build directory since after they are build, they don't"
-    echo "really serve much purpose anymore."
+    echo "the output/build directory since after they are built, they don't"
+    echo "really serve any purpose."
     echo ""
     echo -n "Continue? [y/N] "
     read ANS
@@ -728,9 +731,8 @@ if [ "$1" == "buildroot" ]  || [ "$1" == "b" ] ; then
     fi
 
     echo "First, we'll remove all the build files from output/build/host-* because once"
-    echo "they are built and copied to output/host, there is not more use for them".
-    echo "We only need to kee the .stamp_xxx files to tell Buildroot that they've already"
-    echo "been built."
+    echo "they are built and copied to output/host, there is no use for them. Only need "
+    echo "to keep .stamp_xxx files to tell Buildroot that they've already been built."
     echo -n "Press return to continue..."
     echo TRIMMING:
     TOTAL=`du -s -h -c $(ls -d output/build/host-*) | grep total`
@@ -800,21 +802,21 @@ if [ "$1" == "buildroot" ]  || [ "$1" == "b" ] ; then
     exit
   fi
 
-  # Build Buildroot
+  # Build Buildroot. ###########################################################
   if [ "$2" == "" ] ;then
 
-    # default build
+    # Default build.
     make
 
     if [ ! -e output/images/rootfs.tar ] ; then
-      # did not build, so exit
+      # Did not build, so exit.
       banner_red "Buildroot Build failed. Exiting build script."
       exit
     else
       banner_green "Buildroot Build Successful"
     fi
   else
-      # user wants to build something special
+      # User wants to build something special.
       banner_yellow "Custom Build"
       echo -e "make $2 $3 $4 $5\n"
       make $2 $3 $4 $5
